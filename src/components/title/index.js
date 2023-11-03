@@ -11,7 +11,10 @@ import {
   import 'froala-editor/css/froala_style.min.css';
   import 'froala-editor/css/froala_editor.pkgd.min.css';
   import FroalaEditorComponent from 'react-froala-wysiwyg';
+  import { Editor } from '@tinymce/tinymce-react';
+  import React, { useRef } from 'react';
 
+  import { templateReplaceValues, fields, newTemplate } from "../testdata";
 export default function Title() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -51,6 +54,20 @@ export default function Title() {
       const toggleAccordion = () => {
         setIsOpen(!isOpen);
       };
+
+
+      const editorRef = useRef(null);
+      const log = () => {
+        if (editorRef.current) {
+          console.log(editorRef.current.getContent());
+        }
+      };
+
+      const onChange=(e) =>{
+        const content = e.target.getContent();
+        console.log(content);
+      }
+
       return (
         <>
         {titleCreate ? (
@@ -68,7 +85,31 @@ export default function Title() {
                 </div>
             </Button>
             <Collapse isOpen={isOpen}>
-                <FroalaEditorComponent tag="textarea" />
+                {/* <FroalaEditorComponent tag="textarea" /> */}
+                <Editor
+                    initialValue={newTemplate}
+                    init={{
+                    selector: "#tiny",
+                    plugins: "link image code table noneditable template hr importcss",
+                    menubar: " format table tools",
+                    noneditable_noneditable_class: "mceNonEditable myClass",
+                    toolbar:
+                        "image undo redo | hr | bold italic | alignleft aligncenter alignright | template | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol",
+                    noneditable_regexp: /{{([^}]*)}}/g,
+                    height: 500,
+                    template_replace_values: templateReplaceValues,
+                    template_preview_replace_values: templateReplaceValues,
+                    templates: fields,
+                    contextmenu: "table",
+                    branding: false
+                    //skin_url: "/skins",
+                    // skin: "TESTSKIN",
+                    //content_css: "TESTSKIN"
+                    }}
+                    onChange={onChange}
+                    //outputFormat='text'
+                />
+                <button onClick={log}>Log editor content</button>
             </Collapse>
             
 
